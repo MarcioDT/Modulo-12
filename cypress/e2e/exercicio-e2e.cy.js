@@ -20,13 +20,20 @@ context('Exercicio - Testes End-to-end - Fluxo de pedido', () => {
   it('Deve fazer um pedido na loja Ebac Shop de ponta a ponta', () => {
 
     cy.fixture('selecaoProduto').then(produtos => {
-        for (let i = 0; i < 4; i++) {
+        //for (let i = 0; i < 4; i++) {
 
-            produtosPage.buscarProduto(produtos[i].nomeProduto)
-            produtosPage.addProdutoCarriho(produtos[i].tamanho,produtos[i].cor,produtos[i].quantidade)           
-            cy.get('.woocommerce-message').should('contain',produtos[i].nomeProduto) 
-       }        
-    })  
+            //produtosPage.buscarProduto(produtos[i].nomeProduto)
+            //produtosPage.addProdutoCarriho(produtos[i].tamanho,produtos[i].cor,produtos[i].quantidade)         
+            //cy.get('.woocommerce-message').should('contain',produtos[i].nomeProduto) 
+       //}    
+      Cypress._.each(produtos.slice(0, 4), produto => {
+        
+        produtosPage.buscarProduto(produto.nomeProduto)
+        produtosPage.addProdutoCarriho(produto.tamanho, produto.cor, produto.quantidade)
+        cy.get('.woocommerce-message').should('contain', produto.nomeProduto)
+      });       
+
+    });  
     cy.get('.woocommerce-message > .button').click()
     cy.get('.checkout-button').click()    
     cy.get('.showlogin').click()      
@@ -39,5 +46,8 @@ context('Exercicio - Testes End-to-end - Fluxo de pedido', () => {
     cy.get('#terms').click()
     cy.get('[data-value="Finalizar compra"]').click()
 
+    cy.wait(9000)
+    cy.get('.woocommerce-notice').should('contain','Obrigado. Seu pedido foi recebido')
+    //cy.get('.woocommerce-notice woocommerce-notice--success woocommerce-thankyou-order-received').should('exist')
   });
 })
